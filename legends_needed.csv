@@ -1,0 +1,85 @@
+sport,season,name,team,file name to use,has picture
+baseball,1956,Mickey Mantle,New York Yankees,mickey-mantle.jpg,no
+baseball,1957,Ted Williams,Boston Red Sox,ted-williams.jpg,no
+baseball,1957,Mickey Mantle,New York Yankees,mickey-mantle.jpg,no
+baseball,1968,Bob Gibson,St. Louis Cardinals,bob-gibson.jpg,no
+baseball,1980,George Brett,Kansas City Royals,george-brett.jpg,no
+baseball,1981,Mike Schmidt,Philadelphia Phillies,mike-schmidt.jpg,no
+baseball,1985,Dwight Gooden,New York Mets,dwight-gooden.jpg,no
+baseball,1993,Barry Bonds,San Francisco Giants,barry-bonds.jpg,no
+baseball,1994,Greg Maddux,Atlanta Braves,greg-maddux.jpg,no
+baseball,1994,Frank Thomas,Chicago White Sox,frank-thomas.jpg,no
+baseball,1995,Greg Maddux,Atlanta Braves,greg-maddux.jpg,no
+baseball,1996,Kevin Brown,Florida Marlins,kevin-brown.jpg,no
+baseball,1997,Larry Walker,Colorado Rockies,larry-walker.jpg,no
+baseball,1998,Mark McGwire,St. Louis Cardinals,mark-mcgwire.jpg,no
+baseball,1999,Pedro Martinez,Boston Red Sox,pedro-martinez.jpg,no
+baseball,2000,Pedro Martinez,Boston Red Sox,pedro-martinez.jpg,no
+baseball,2001,Barry Bonds,San Francisco Giants,barry-bonds.jpg,no
+baseball,2002,Barry Bonds,San Francisco Giants,barry-bonds.jpg,no
+baseball,2003,Barry Bonds,San Francisco Giants,barry-bonds.jpg,no
+baseball,2004,Barry Bonds,San Francisco Giants,barry-bonds.jpg,no
+baseball,2013,Miguel Cabrera,Detroit Tigers,miguel-cabrera.jpg,no
+baseball,2015,Jake Arrieta,Chicago Cubs,jake-arrieta.jpg,no
+baseball,2015,Zack Greinke,Los Angeles Dodgers,zack-greinke.jpg,no
+baseball,2015,Bryce Harper,Washington Nationals,bryce-harper.jpg,no
+baseball,2018,Mike Trout,Los Angeles Angels of Anaheim,mike-trout.jpg,no
+baseball,2018,Jacob deGrom,New York Mets,jacob-degrom.jpg,no
+baseball,2021,Jacob deGrom,New York Mets,jacob-degrom.jpg,no
+baseball,2022,Aaron Judge,New York Yankees,aaron-judge.jpg,no
+baseball,2024,Aaron Judge,New York Yankees,aaron-judge.jpg,no
+baseball,2025,Aaron Judge,New York Yankees,aaron-judge.jpg,no
+basketball,1970-71,Kareem Abdul-Jabbar,Milwaukee Bucks,kareem-abdul-jabbar.jpg,no
+basketball,1971-72,Kareem Abdul-Jabbar,Milwaukee Bucks,kareem-abdul-jabbar.jpg,no
+basketball,1975-76,Kareem Abdul-Jabbar,Los Angeles Lakers,kareem-abdul-jabbar.jpg,no
+basketball,1976-77,Kareem Abdul-Jabbar,Los Angeles Lakers,kareem-abdul-jabbar.jpg,no
+basketball,1986-87,Michael Jordan,Chicago Bulls,michael-jordan.jpg,no
+basketball,1987-88,Michael Jordan,Chicago Bulls,michael-jordan.jpg,no
+basketball,1988-89,Michael Jordan,Chicago Bulls,michael-jordan.jpg,no
+basketball,1990-91,Michael Jordan,Chicago Bulls,michael-jordan.jpg,no
+basketball,1992-93,Michael Jordan,Chicago Bulls,michael-jordan.jpg,no
+basketball,1993-94,David Robinson,San Antonio Spurs,david-robinson.jpg,no
+basketball,1995-96,Michael Jordan,Chicago Bulls,michael-jordan.jpg,no
+basketball,1999-00,Shaquille O'Neal,Los Angeles Lakers,shaquille-o-neal.jpg,no
+basketball,2003-04,Kevin Garnett,Minnesota Timberwolves,kevin-garnett.jpg,no
+basketball,2008-09,LeBron James,Cleveland Cavaliers,lebron-james.jpg,no
+basketball,2008-09,Chris Paul,New Orleans Hornets,chris-paul.jpg,no
+basketball,2009-10,LeBron James,Cleveland Cavaliers,lebron-james.jpg,no
+basketball,2011-12,LeBron James,Miami Heat,lebron-james.jpg,no
+basketball,2012-13,LeBron James,Miami Heat,lebron-james.jpg,no
+basketball,2012-13,Kevin Durant,Oklahoma City Thunder,kevin-durant.jpg,no
+basketball,2013-14,Kevin Durant,Oklahoma City Thunder,kevin-durant.jpg,no
+basketball,2015-16,Stephen Curry,Golden State Warriors,stephen-curry.jpg,no
+basketball,2018-19,James Harden,Houston Rockets,james-harden.jpg,no
+basketball,2020-21,Nikola Jokić,Denver Nuggets,nikola-jokic.jpg,no
+basketball,2021-22,Nikola Jokić,Denver Nuggets,nikola-jokic.jpg,no
+basketball,2022-23,Nikola Jokić,Denver Nuggets,nikola-jokic.jpg,no
+basketball,2023-24,Nikola Jokić,Denver Nuggets,nikola-jokic.jpg,no
+basketball,2024-25,Nikola Jokić,Denver Nuggets,nikola-jokic.jpg,no
+basketball,2024-25,Shai Gilgeous-Alexander,Oklahoma City Thunder,shai-gilgeous-alexander.jpg,no
+basketball,2025-26,Nikola Jokić,Denver Nuggets,nikola-jokic.jpg,no
+basketball,2025-26,Shai Gilgeous-Alexander,Oklahoma City Thunder,shai-gilgeous-alexander.jpg,no
+football,1972,Jack Ham,Pittsburgh Steelers,jack-ham.jpg,no
+football,1974,Emmitt Thomas,Kansas City Chiefs,emmitt-thomas.jpg,no
+football,1974,Cliff Branch,Oakland Raiders,cliff-branch.jpg,no
+football,1975,O.J. Simpson,Buffalo Bills,o-j-simpson.jpg,no
+football,1975,Stan White,Baltimore Colts,stan-white.jpg,no
+football,1977,Walter Payton,Chicago Bears,walter-payton.jpg,no
+football,1977,Stan White,Baltimore Colts,stan-white.jpg,no
+football,1979,Mike Reinfeldt,Houston Oilers,mike-reinfeldt.jpg,no
+football,1980,Al Richardson ,Atlanta Falcons,al-richardson.jpg,no
+football,1980,Lester Hayes,Oakland Raiders,lester-hayes.jpg,no
+football,1982,Wes Chandler,San Diego Chargers,wes-chandler.jpg,no
+football,1986,Lawrence Taylor,New York Giants,lawrence-taylor.jpg,no
+football,1987,Reggie White,Philadelphia Eagles,reggie-white.jpg,no
+football,2001,Michael Strahan,New York Giants,michael-strahan.jpg,no
+football,2004,Ed Reed,Baltimore Ravens,ed-reed.jpg,no
+football,2005,Neil Rackers,Arizona Cardinals,neil-rackers.jpg,no
+football,2007,Tom Brady,New England Patriots,tom-brady.jpg,no
+football,2012,J.J. Watt,Houston Texans,j-j-watt.jpg,no
+football,2014,J.J. Watt,Houston Texans,j-j-watt.jpg,no
+football,2020,Xavien Howard,Miami Dolphins,xavien-howard.jpg,no
+football,2021,Trevon Diggs,Dallas Cowboys,trevon-diggs.jpg,no
+football,2021,Cooper Kupp,Los Angeles Rams,cooper-kupp.jpg,no
+football,2022,Travis Kelce,Kansas City Chiefs,travis-kelce.jpg,no
+football,2025,Myles Garrett,Cleveland Browns,myles-garrett.jpg,no
