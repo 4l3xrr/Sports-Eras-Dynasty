@@ -13,7 +13,7 @@ Run from the project folder:
 
 import pandas as pd
 
-from common import RAW, era_for, player_record, write_seasons
+from common import RAW, era_for, player_record, write_quiz, write_seasons
 import numpy as np
 
 from ratings import apply_floor, blend, calibrate, report, to_ovr, zscore
@@ -63,7 +63,7 @@ names = (people.nameFirst.fillna("") + " " + people.nameLast.fillna("")).str.str
 # ------------------------------------------------------------------
 # 3. HITTERS: OPS+ against the league that year, plus volume and position
 # ------------------------------------------------------------------
-bat = batting.groupby(KEYS)[["AB", "H", "2B", "3B", "HR", "BB", "HBP", "SF"]].sum().fillna(0)
+bat = batting.groupby(KEYS)[["AB", "H", "2B", "3B", "HR", "BB", "HBP", "SF", "R", "RBI", "SB"]].sum().fillna(0)
 bat["PA"] = bat.AB + bat.BB + bat.HBP + bat.SF
 bat["OBP"] = (bat.H + bat.BB + bat.HBP) / bat.PA.where(bat.PA > 0)
 bat["SLG"] = (bat.H + bat["2B"] + 2 * bat["3B"] + 3 * bat.HR) / bat.AB.where(bat.AB > 0)
@@ -86,13 +86,14 @@ bat["positions"] = [positions_for(k) for k in bat.index]
 bat = bat[bat.positions.map(len) > 0].copy()
 years = bat.index.get_level_values("yearID")
 bat["z"] = zscore(blend([zscore(bat.shrunk, years), zscore(bat.PA, years)], [0.8, 0.2]), years)
+bat["z_bat"] = bat.z.copy()            # hitting only, for The Numbers Game's DH spot
 bat["z"] += bat.positions.map(lambda p: POSITION_VALUE.get(p[0], 0))
 bat["regular"] = bat.PA >= REGULAR_PA
 
 # ------------------------------------------------------------------
 # 4. PITCHERS: ERA+ against the league; starters vs starters, relievers vs relievers
 # ------------------------------------------------------------------
-pit = pitching.groupby(KEYS)[["G", "GS", "IPouts", "ER"]].sum().fillna(0)
+pit = pitching.groupby(KEYS)[["G", "GS", "IPouts", "ER", "W", "L", "SV", "H", "BB", "SO"]].sum().fillna(0)
 pit["IP"] = pit.IPouts / 3
 pit = pit[pit.IP >= MIN_IP].copy()
 pit["ERA"] = 9 * pit.ER / pit.IP
@@ -115,6 +116,7 @@ for df in (bat, pit):
     df["ovr"] = to_ovr(df.z, anchors)
     df["hof"] = [k[0] in hall_of_famers for k in df.index]
     df["ovr"], df["floored"] = apply_floor(df.ovr, df.hof, df.regular)
+bat["bat_ovr"], _ = apply_floor(to_ovr(bat.z_bat, anchors), bat.hof, bat.regular)
 report("Baseball", pd.concat([bat.ovr, pit.ovr]), n_seasons)
 
 # ------------------------------------------------------------------
@@ -147,3 +149,42 @@ for year, season_teams in teams.groupby("yearID"):
     seasons.append({"year": int(year), "era": era_for(year), "teams": out_teams})
 
 write_seasons("baseball", seasons)
+
+# ------------------------------------------------------------------
+# 7. THE NUMBERS GAME: full stat lines for regular seasons
+#    Hitters: their main position (and any hitter can be the DH, rated on hitting alone)
+#    Pitchers: SP (120+ IP), closer CL (20+ saves), other relievers RP (40+ games)
+# ------------------------------------------------------------------
+team_names = teams.set_index(["teamID", "yearID"])["name"]
+
+
+def main_team(rows, weight):
+    best = rows.sort_values(weight, ascending=False).drop_duplicates(KEYS).set_index(KEYS)
+    return {k: team_names.get((t, k[1]), t) for k, t in best.teamID.items()}
+
+
+bat_team = main_team(batting, "AB")
+pit_team = main_team(pitching, "IPouts")
+quiz = []
+for key, b in bat[bat.PA >= REGULAR_PA].iterrows():
+    main = b.positions[0]
+    ops = b.OBP + b.SLG
+    quiz.append({"name": names.get(key[0], key[0]), "year": key[1], "team": bat_team.get(key, ""),
+                 "ref": people.bbrefID.get(key[0]), "ovr": b.ovr, "bat": b.bat_ovr, "group": "HIT",
+                 "spots": [] if main == "DH" else [main],
+                 "stats": [b.H / b.AB, b.HR, b.RBI, b.R, b.SB, b.OBP, ops]})
+for key, p in pit.iterrows():
+    if p.role == "SP":
+        spot = "SP" if p.IP >= REGULAR_SP_IP else None
+    else:
+        spot = "CL" if p.SV >= 20 else "RP" if p.G >= 40 else None
+    if not spot:
+        continue
+    whip = (p.H + p.BB) / p.IP
+    stats = [p.W, p.L, p.ERA, p.IP, p.SO, whip] if spot == "SP" else [p.SV, p.G, p.IP, p.ERA, p.SO, whip]
+    quiz.append({"name": names.get(key[0], key[0]), "year": key[1], "team": pit_team.get(key, ""),
+                 "ref": people.bbrefID.get(key[0]), "ovr": p.ovr, "group": "SP" if spot == "SP" else "RP",
+                 "spots": [spot], "stats": stats})
+write_quiz("baseball", {"HIT": ["AVG", "HR", "RBI", "R", "SB", "OBP", "OPS"],
+                        "SP": ["W", "L", "ERA", "IP", "K", "WHIP"],
+                        "RP": ["SV", "G", "IP", "ERA", "K", "WHIP"]}, quiz)

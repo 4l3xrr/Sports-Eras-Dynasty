@@ -11,12 +11,17 @@ import Draft from "./components/Draft.jsx";
 import Gamble from "./components/Gamble.jsx";
 import Results from "./components/Results.jsx";
 import Credits from "./components/Credits.jsx";
+import NumbersGame, { NumbersSetup } from "./components/NumbersGame.jsx";
 
 const DEFAULTS = { eraId: "all", blind: false, salary: false, opponent: "none", cpu: "easy", p1: "Player 1", p2: "Player 2", league: "contenders", difficulty: "normal" };
-const STEPS = [["sport", "Sport"], ["setup", "Setup"], ["draft", "Draft"], ["results", "Season"]];
+const STEPS = { draft: [["sport", "Sport"], ["setup", "Setup"], ["draft", "Draft"], ["results", "Season"]],
+  quiz: [["sport", "Sport"], ["setup", "Players"], ["draft", "Rounds"], ["results", "Grade"]] };
 
 export default function App() {
   const [screen, setScreen] = useState("sport");
+  const [mode, setMode] = useState("draft");            // draft = Era Draft, quiz = The Numbers Game
+  const [quizPlayers, setQuizPlayers] = useState(null);
+  const [quizKey, setQuizKey] = useState(0);
   const [sport, setSport] = useState(null);
   const [settings, setSettings] = useState(DEFAULTS);
   const [pictures, setPictures] = useState({ photos: {}, legends: {} });
@@ -36,7 +41,7 @@ export default function App() {
   async function pickSport(key) {
     setSport(key);
     setSettings(DEFAULTS);
-    setScreen("setup");
+    setScreen(mode === "quiz" ? "quiz-setup" : "setup");
     setPictures(await loadPictures(key));
   }
 
@@ -87,7 +92,14 @@ export default function App() {
     window.scrollTo({ top: 0 });
   }
 
-  const stepIndex = creditsOpen ? -1 : { sport: 0, setup: 1, draft: 2, gamble: 2, simulating: 3, results: 3 }[screen];
+  function startQuiz(players) {
+    setQuizPlayers(players);
+    setQuizKey((k) => k + 1);
+    setScreen("quiz");
+    window.scrollTo({ top: 0 });
+  }
+
+  const stepIndex = creditsOpen ? -1 : { sport: 0, setup: 1, "quiz-setup": 1, draft: 2, quiz: 2, gamble: 2, simulating: 3, results: 3 }[screen];
   const accent = sport ? SPORTS[sport].color : "#6E9CF0";
 
   return (
@@ -96,7 +108,7 @@ export default function App() {
         <header className="bar">
           <button className="brand" onClick={() => { setCreditsOpen(false); setScreen("sport"); }}><i />Era Draft</button>
           <nav className="crumbs">
-            {STEPS.map(([id, label], i) => <span key={id} className={`step${i === stepIndex ? " on" : ""}`}>{label}</span>)}
+            {STEPS[mode].map(([id, label], i) => <span key={id} className={`step${i === stepIndex ? " on" : ""}`}>{label}</span>)}
             <button className="linkbtn" onClick={() => setCreditsOpen(!creditsOpen)}>{creditsOpen ? "Close credits" : "Credits"}</button>
           </nav>
         </header>
@@ -104,7 +116,14 @@ export default function App() {
         {creditsOpen && <Credits seen={seen.current} onBack={() => setCreditsOpen(false)} />}
         {/* Screens stay mounted while credits are open, so a draft in progress isn't lost */}
         <div hidden={creditsOpen}>
-        {screen === "sport" && <SportPicker onPick={pickSport} />}
+        {screen === "sport" && <SportPicker mode={mode} onMode={setMode} onPick={pickSport} />}
+        {screen === "quiz-setup" && <NumbersSetup sport={sport} onStart={startQuiz} onBack={() => setScreen("sport")} />}
+        {screen === "quiz" && (
+          <NumbersGame key={quizKey} sport={sport} players={quizPlayers}
+            onAgain={() => startQuiz(quizPlayers)}
+            onNewSetup={() => setScreen("quiz-setup")}
+            onChangeSport={() => setScreen("sport")} />
+        )}
         {screen === "setup" && <Setup sport={sport} settings={settings} setSettings={setSettings} onStart={startDraft} onBack={() => setScreen("sport")} />}
         {screen === "draft" && (
           <Draft key={draftKey} sport={sport} settings={settings} era={era} drafters={drafters}

@@ -3,7 +3,7 @@
 
 const cache = new Map();
 
-async function getJSON(path, fallback) {
+export async function getJSON(path, fallback) {
   if (!cache.has(path)) {
     cache.set(path, fetch(path).then((r) => {
       if (!r.ok) throw new Error(`${path}: ${r.status}`);

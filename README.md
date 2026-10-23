@@ -2,6 +2,8 @@
 
 Draft real players from random teams across history, fill every position, then take your team through a full season, playoffs and awards against the best teams of your chosen era. Baseball, basketball and football; soccer is coming later.
 
+Also includes **The Numbers Game**: each round shows five mystery players from any era (just the year and some of their stats). Pick who was best. Some rounds have no stars, some have three, and about a third are traps, where the stats shown are chosen to make a weaker player look best. You're graded on how close you came to the best team you could've had. Play solo or pass-and-play against a friend.
+
 Built with React + Vite (the game) and Python + pandas (the data pipeline).
 
 ## Run it
@@ -21,6 +23,7 @@ Baseball needs the Lahman CSVs in `data/raw/lahman/`. Football before 1999 needs
 - **Ratings** (`scripts/ratings.py`): each player is compared with players at his position in his own season (a z-score), then mapped to 55-99. A 99 appears about once every 2.5 seasons per sport. Hall of Famers have a floor of 85 in seasons they were regulars.
 - **Validation** (`scripts/calibrate.mjs`): team ratings are checked against real records. Correlation between rating and real win %: basketball 0.87, baseball 0.76, football 0.72. The simulator's upset factor per sport is fitted to that data.
 - **Game** (`src/`): screens in `src/components/`, rules in plain JavaScript in `src/game/` (draft, league, playoffs, modes, recap).
+- **The Numbers Game** (`src/game/quiz.js`): the converters also write a pool of full stat lines per sport (`public/data/quiz/`). Each stat is ranked against every season in history; a trap round picks the weaker card whose most flattering stats out-shine the best card's least flattering ones, while always leaving one honest stat (OPS, ERA, TS%, yards per attempt...) visible. In testing, a player who trusts flashy stats picks the best card on 0% of trap rounds; one who reads the honest stats gets 57-78%.
 
 ## Credits
 

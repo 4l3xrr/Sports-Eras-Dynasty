@@ -27,7 +27,7 @@ import numpy as np
 import openpyxl
 import pandas as pd
 
-from common import PROJECT, RAW, era_for, fetch, player_record, write_seasons
+from common import PROJECT, RAW, era_for, fetch, player_record, write_quiz, write_seasons
 from ratings import HOF_FLOOR, apply_floor, blend, calibrate, report, to_ovr, zscore
 
 # ------------------------------------------------------------------
@@ -739,3 +739,31 @@ for s in seasons_out:
         defenders = sum(1 for t in s["teams"] for p in t["players"] if set(p["positions"]) & DEFENSE)
         if defenders < 5 * max(len(s["teams"]), 1):
             print(f"  NOTE: {s['year']} has only {defenders} defenders across {len(s['teams'])} teams.")
+
+# ------------------------------------------------------------------
+# 9. THE NUMBERS GAME: offense only (QB, RB, WR, TE), full-time seasons
+# ------------------------------------------------------------------
+QUIZ_MIN = {"QB": ("pass_att", 200), "RB": ("rush_att", 120), "WR": ("rec", 35), "TE": ("rec", 25)}
+main_team = (per_team.sort_values("games", ascending=False)
+             .drop_duplicates(["player_id", "season"]).set_index(["player_id", "season"]).team)
+quiz = []
+for (pid, year), r in rated[rated.group.isin(list(QUIZ_MIN))].iterrows():
+    col, minimum = QUIZ_MIN[r.group]
+    if not (r[col] >= minimum):
+        continue
+    n = lambda col: None if pd.isna(r[col]) else float(r[col])
+    if r.group == "QB":
+        stats = [n("pass_yds"), n("pass_td"), n("pass_int"),
+                 r.pass_cmp / r.pass_att if pd.notna(r.pass_cmp) else None, r.pass_yds / r.pass_att]
+    elif r.group == "RB":
+        stats = [n("rush_yds"), n("rush_att"), r.rush_yds / r.rush_att, n("rush_td"), n("rec_yds")]
+    else:
+        stats = [n("rec"), n("rec_yds"), n("rec_td"), r.rec_yds / r.rec if r.rec else None,
+                 r.rec_yds / r.games if r.games else None]
+    fr = main_team.get((pid, year))
+    quiz.append({"name": r["name"], "year": int(year), "team": team_name(fr, int(year)) if fr else "",
+                 "ref": r.ref if isinstance(r.ref, str) else None, "ovr": r.ovr,
+                 "group": "WR" if r.group == "TE" else r.group, "spots": [r.group], "stats": stats})
+write_quiz("football", {"QB": ["YDS", "TD", "INT", "CMP%", "Y/A"],
+                        "RB": ["YDS", "ATT", "YPC", "TD", "REC YDS"],
+                        "WR": ["REC", "YDS", "TD", "Y/R", "YDS/G"]}, quiz)

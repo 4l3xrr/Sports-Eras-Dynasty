@@ -1,4 +1,5 @@
 import { SPORTS } from "../game/sports.js";
+import { QUIZ_LINEUPS } from "../game/quiz.js";
 
 const GLYPHS = {
   soccer: <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="22" cy="22" r="17" /><path d="M22 13l7 5-3 8h-8l-3-8z" /><path d="M22 5v8M36 16l-7 2M33 36l-7-10M11 36l7-10M8 16l7 2" /></svg>,
@@ -9,14 +10,30 @@ const GLYPHS = {
 
 const ORDER = ["baseball", "basketball", "football", "soccer"];
 const PLAYOFF_TEXT = { baseball: "12 teams, series of 3, 5 and 7", basketball: "Play-In, then best of 7", football: "14 teams, single games" };
+const QUIZ_TEXT = { baseball: "8 fielders, DH, SP, RP, closer", basketball: "Starting five + sixth man", football: "QB, 2 WR, RB, TE, flex" };
+const QUIZ_YEARS = { baseball: "1950–2025", basketball: "1952–2026", football: "1966–2025" };
 
-export default function SportPicker({ onPick }) {
+const MODES = [
+  ["draft", "Era Draft", "Draft real players from real teams, then play a full season."],
+  ["quiz", "The Numbers Game", "Pick the best player from five mystery stat lines. No names, no faces."],
+];
+
+export default function SportPicker({ mode, onMode, onPick }) {
   return (
     <section className="fade">
       <div className="intro">
-        <span className="eyebrow">Pick a sport</span>
-        <h1>Build a team out of history</h1>
-        <p>Each round deals you a real team from a random season. Take one player, fill every position, then take your team through a full season against the best teams of the era.</p>
+        <span className="eyebrow">Pick a game, then a sport</span>
+        <h1>{mode === "quiz" ? "Trust the numbers?" : "Build a team out of history"}</h1>
+        <p>{mode === "quiz"
+          ? "Five mystery players per round, from any era. Some rounds have no stars, some have three, and some stat lines are picked to fool you. You're graded on what you could've had."
+          : "Each round deals you a real team from a random season. Take one player, fill every position, then take your team through a full season against the best teams of the era."}</p>
+      </div>
+      <div className="modes" role="tablist">
+        {MODES.map(([id, label, text]) => (
+          <button key={id} role="tab" aria-selected={mode === id} className={`mode${mode === id ? " on" : ""}`} onClick={() => onMode(id)}>
+            <b>{label}</b><small>{text}</small>
+          </button>
+        ))}
       </div>
       <div className="sports">
         {ORDER.map((key) => {
@@ -31,13 +48,21 @@ export default function SportPicker({ onPick }) {
                 <span className="eyebrow">Coming soon</span>
               ) : (
                 <>
-                  <dl>
-                    <dt>Seasons</dt><dd>{all.from}–{all.to}</dd>
-                    <dt>Lineup</dt><dd>{starters} starters + {s.bench} bench</dd>
-                    <dt>Season</dt><dd>{s.season} games</dd>
-                    <dt>Playoffs</dt><dd>{PLAYOFF_TEXT[key]}</dd>
-                  </dl>
-                  <span className="go">Choose →</span>
+                  {mode === "quiz" ? (
+                    <dl>
+                      <dt>Seasons</dt><dd>{QUIZ_YEARS[key]}</dd>
+                      <dt>Rounds</dt><dd>{QUIZ_LINEUPS[key].length}</dd>
+                      <dt>Spots</dt><dd>{QUIZ_TEXT[key]}</dd>
+                    </dl>
+                  ) : (
+                    <dl>
+                      <dt>Seasons</dt><dd>{all.from}–{all.to}</dd>
+                      <dt>Lineup</dt><dd>{starters} starters + {s.bench} bench</dd>
+                      <dt>Season</dt><dd>{s.season} games</dd>
+                      <dt>Playoffs</dt><dd>{PLAYOFF_TEXT[key]}</dd>
+                    </dl>
+                  )}
+                  <span className="go">{mode === "quiz" ? "Play →" : "Choose →"}</span>
                 </>
               )}
             </button>

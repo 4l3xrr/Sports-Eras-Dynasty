@@ -60,6 +60,40 @@ def write_seasons(sport, seasons):
     return out
 
 
+def write_quiz(sport, stat_groups, players):
+    """The Numbers Game's player pool: public/data/quiz/<sport>.json.
+    stat_groups: {group: [stat names]}, the order of each player's stat list.
+    players: dicts with name, year, label, team, ref, ovr, group, spots, stats (list, None = not recorded),
+             and optionally bat (a hitting-only rating, for baseball's DH spot).
+    Short keys keep the file small, since it holds every eligible season from every era."""
+    teams = sorted({p["team"] for p in players})
+    team_index = {t: i for i, t in enumerate(teams)}
+    rows = []
+    for p in players:
+        row = {"n": p["name"], "y": int(p["year"]), "t": team_index[p["team"]], "o": int(p["ovr"]),
+               "g": p["group"], "p": p["spots"],
+               "s": [None if v is None or v != v else (round(v, 3) if isinstance(v, float) else int(v))
+                     for v in p["stats"]]}
+        if p.get("label") and p["label"] != str(p["year"]):
+            row["l"] = p["label"]
+        if p.get("ref"):
+            row["r"] = p["ref"]
+        if p.get("bat") is not None:
+            row["b"] = int(p["bat"])
+        rows.append(row)
+    out = PUBLIC_DATA / "quiz"
+    out.mkdir(parents=True, exist_ok=True)
+    body = {"sport": sport, "stats": stat_groups, "teams": teams, "players": rows}
+    path = out / f"{sport}.json"
+    path.write_text(json.dumps(body, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
+    counts = {}
+    for r in rows:
+        for s in r["p"]:
+            counts[s] = counts.get(s, 0) + 1
+    print(f"Wrote The Numbers Game pool: {len(rows)} player-seasons "
+          f"({', '.join(f'{k} {v}' for k, v in counts.items())}), {path.stat().st_size / 1e6:.1f} MB")
+
+
 def player_record(pid, name, positions, ovr, stats, ref=None, hof=False, floored=False, limited=False):
     """One player, in the format the app expects. Flags are left out when false to keep files small."""
     p = {"id": pid, "name": name, "positions": positions, "ovr": int(ovr), "stats": stats}

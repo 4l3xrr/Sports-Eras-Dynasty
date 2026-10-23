@@ -18,7 +18,7 @@ Run from the project folder:
 
 import pandas as pd
 
-from common import RAW, era_for, fetch, player_record, quote, write_seasons
+from common import RAW, era_for, fetch, player_record, quote, write_quiz, write_seasons
 from ratings import apply_floor, calibrate, report, to_ovr, zscore
 
 # ------------------------------------------------------------------
@@ -125,3 +125,28 @@ for yr, season_teams in teams.groupby("season"):
     seasons.append({"year": int(yr), "label": season_label(yr), "era": era_for(yr), "teams": out_teams})
 
 write_seasons("basketball", seasons)
+
+# ------------------------------------------------------------------
+# 5. THE NUMBERS GAME: full per-game lines for regular seasons (1,500+ minutes)
+#    Spot = main position; anyone can be the sixth man. Steals and blocks start in 1973-74.
+# ------------------------------------------------------------------
+team_names = {(r.abbreviation, r.season): r.team.replace("*", "") for r in teams.itertuples()}
+quiz = []
+for key, p in rows[rows.mp >= REGULAR_MINUTES].iterrows():
+    if key not in pg.index:
+        continue
+    g = pg.loc[key]
+    # traded players: credit the team they played the most games for
+    stints = team_rows[(team_rows.player_id == key[0]) & (team_rows.season == key[1])]
+    team = stints.sort_values("mp", ascending=False).team.iloc[0] if len(stints) else ""
+    num = lambda v: None if pd.isna(v) else float(v)
+    listed = p.pos if isinstance(p.pos, str) else g.pos if isinstance(g.pos, str) else ""
+    spot = positions_for(key, listed)[0]
+    if spot not in ("PG", "SG", "SF", "PF", "C"):
+        continue
+    quiz.append({"name": p.player, "year": key[1], "label": season_label(key[1]),
+                 "team": team_names.get((team, key[1]), team), "ref": key[0], "ovr": p.ovr, "group": "BB",
+                 "spots": [spot],
+                 "stats": [num(g.pts_per_game), num(g.trb_per_game), num(g.ast_per_game), num(g.stl_per_game),
+                           num(g.blk_per_game), num(g.fg_percent), num(p.ts_percent)]})
+write_quiz("basketball", {"BB": ["PTS", "REB", "AST", "STL", "BLK", "FG%", "TS%"]}, quiz)
